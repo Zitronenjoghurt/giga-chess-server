@@ -6,6 +6,7 @@ use utoipa_rapidoc::RapiDoc;
 use utoipa_swagger_ui::SwaggerUi;
 
 pub mod error;
+pub mod security;
 pub mod state;
 
 pub fn build_app() -> Router {

@@ -2,10 +2,13 @@
 name = "giga-chess-server"
 version = "0.1.0"
 edition = "2024"
+default-run = "giga-chess-server"
 
 [dependencies]
+argon2 = { version = "0.5.3", features = ["std"] }
 axum = { version = "0.8.4", features = ["http2", "ws"] }
 chrono = { version = "0.4.41", features = ["serde"] }
+clap = { version = "4.5.40", features = ["derive"] }
 diesel = { version = "2.2.10", features = ["postgres", "r2d2", "chrono"] }
 diesel_migrations = { version = "2.2.0", features = ["postgres"] }
 dotenvy = "0.15.7"
@@ -17,3 +20,8 @@ tokio = { version = "1.45.1", features = ["macros", "rt-multi-thread"] }
 utoipa = "5.3.1"
 utoipa-rapidoc = { version = "6.0.0", features = ["axum"] }
 utoipa-swagger-ui = { version = "9.0.2", features = ["axum"] }
+uuid = { version = "1.17.0", features = ["v4"] }
+
+[[bin]]
+name = "cli"
+path = "src/bin/cli.rs"

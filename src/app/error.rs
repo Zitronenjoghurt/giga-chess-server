@@ -6,21 +6,28 @@ pub type AppResult<T> = Result<T, AppError>;
 
 #[derive(Error, Debug)]
 pub enum AppError {
-    #[error("Authorization error: {0}")]
-    Authorization(String),
-    #[error("Database connection error")]
+    #[error("Database error")]
     DatabaseConnection(#[from] r2d2::Error),
-    #[error("Database migration error")]
+    #[error("Database error")]
     DatabaseMigrationError(String),
-    #[error("Database query error")]
+    #[error("Database error")]
     DatabaseQuery(#[from] diesel::result::Error),
+    #[error("Invalid username and/or token")]
+    InvalidCredentials,
+    #[error("Missing credentials: {0}")]
+    MissingCredentials(String),
+    #[error("An unexpected error occurred")]
+    Argon2Hash(#[from] argon2::password_hash::Error),
 }
 
 impl AppError {
     pub fn get_status_code(&self) -> StatusCode {
         match self {
-            Self::Authorization(_) => StatusCode::UNAUTHORIZED,
-            Self::DatabaseConnection(_)
+            AppError::InvalidCredentials | AppError::MissingCredentials(_) => {
+                StatusCode::UNAUTHORIZED
+            }
+            Self::Argon2Hash(_)
+            | Self::DatabaseConnection(_)
             | Self::DatabaseQuery(_)
             | Self::DatabaseMigrationError(_) => StatusCode::INTERNAL_SERVER_ERROR,
         }

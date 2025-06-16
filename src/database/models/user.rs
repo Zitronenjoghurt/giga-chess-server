@@ -10,6 +10,7 @@ use serde::{Deserialize, Serialize};
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct User {
     pub id: i64,
+    pub name: String,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
     pub token_hash: String,
@@ -23,5 +24,15 @@ impl Model for User {
 #[derive(Insertable, Deserialize)]
 #[diesel(table_name = crate::database::schema::users)]
 pub struct NewUser {
-    pub token_hash: String,
+    name: String,
+    token_hash: String,
+}
+
+impl NewUser {
+    pub fn new(name: &str, token_hash: &str) -> Self {
+        Self {
+            name: name.to_lowercase(),
+            token_hash: token_hash.to_string(),
+        }
+    }
 }

@@ -6,9 +6,7 @@ use crate::tests::build_test_app_state;
 fn test_crud() {
     let state = build_test_app_state();
 
-    let new_user = NewUser {
-        token_hash: "Cheesecake".to_string(),
-    };
+    let new_user = NewUser::new("Test User", "Cheesecake");
 
     let mut created_user = state.stores.user.create(new_user).unwrap();
     let found_user = state.stores.user.find(created_user.id).unwrap();

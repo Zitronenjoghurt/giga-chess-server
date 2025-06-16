@@ -9,7 +9,7 @@ services:
     volumes:
       - postgres_data_dev:/var/lib/postgresql/data
 
-  app:
+  app-dev:
     build:
       context: ..
       dockerfile: docker/Dockerfile.dev

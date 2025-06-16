@@ -11,6 +11,17 @@ pub struct UserStore {
     database: Database,
 }
 
+impl UserStore {
+    pub fn find_by_name(&self, name: &str) -> AppResult<Option<User>> {
+        let mut connection = self.get_connection()?;
+        let user = users::table
+            .filter(users::name.eq(name))
+            .first::<User>(&mut connection)
+            .optional()?;
+        Ok(user)
+    }
+}
+
 impl Store<User> for UserStore {
     fn initialize(database: &Database) -> Arc<Self> {
         Arc::new(Self {

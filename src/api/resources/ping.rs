@@ -1,7 +1,8 @@
-use axum::response::{IntoResponse};
-use axum::{routing::get, Router};
+use crate::api::extractors::authentication::AuthUser;
 use crate::api::models::message_response::MessageResponse;
 use crate::app::state::AppState;
+use axum::response::IntoResponse;
+use axum::{routing::get, Router};
 
 /// Ping the API for a response.
 ///
@@ -11,12 +12,16 @@ use crate::app::state::AppState;
     path = "/",
     responses(
         (status = 200, description = "Pong", body = MessageResponse),
+        (status = 401, description = "Unauthorized"),
         (status = 500, description = "Server error"),
     ),
-    tag = "Misc"
+    tag = "Misc",
+    security(
+        ("UsernameAuth" = [], "TokenAuth" = [])
+    )
 )]
-async fn get_ping() -> impl IntoResponse {
-    MessageResponse::new("Pong")
+async fn get_ping(AuthUser(user): AuthUser) -> impl IntoResponse {
+    MessageResponse::new(&format!("Hello, {}", user.name))
 }
 
 pub fn router() -> Router<AppState> {

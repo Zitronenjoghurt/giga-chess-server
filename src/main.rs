@@ -1,11 +1,5 @@
-use crate::app::build_app;
+use giga_chess_server::app::build_app;
 use std::io;
-
-mod api;
-mod app;
-mod database;
-#[cfg(test)]
-mod tests;
 
 #[tokio::main]
 async fn main() -> io::Result<()> {
