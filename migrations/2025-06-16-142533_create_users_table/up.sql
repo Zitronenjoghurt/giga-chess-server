@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS users
+(
+    id         BIGSERIAL PRIMARY KEY,
+    token_hash VARCHAR NOT NULL
+)
