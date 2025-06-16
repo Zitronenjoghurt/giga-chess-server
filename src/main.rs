@@ -4,6 +4,8 @@ use std::io;
 mod api;
 mod app;
 mod database;
+#[cfg(test)]
+mod tests;
 
 #[tokio::main]
 async fn main() -> io::Result<()> {

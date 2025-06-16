@@ -10,6 +10,8 @@ pub enum AppError {
     Authorization(String),
     #[error("Database connection error")]
     DatabaseConnection(#[from] r2d2::Error),
+    #[error("Database migration error")]
+    DatabaseMigrationError(String),
     #[error("Database query error")]
     DatabaseQuery(#[from] diesel::result::Error),
 }
@@ -18,9 +20,9 @@ impl AppError {
     pub fn get_status_code(&self) -> StatusCode {
         match self {
             Self::Authorization(_) => StatusCode::UNAUTHORIZED,
-            Self::DatabaseConnection(_) | Self::DatabaseQuery(_) => {
-                StatusCode::INTERNAL_SERVER_ERROR
-            }
+            Self::DatabaseConnection(_)
+            | Self::DatabaseQuery(_)
+            | Self::DatabaseMigrationError(_) => StatusCode::INTERNAL_SERVER_ERROR,
         }
     }
 }

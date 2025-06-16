@@ -26,6 +26,8 @@ services:
       - ../migrations:/app/migrations
       - cargo_cache:/usr/local/cargo
       - target_cache:/app/target
+    depends_on:
+      - db
     command: >
       sh -c "
         until nc -z db 5432; do

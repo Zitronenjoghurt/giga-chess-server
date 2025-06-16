@@ -1,0 +1,25 @@
+services:
+  db:
+    image: postgres:17
+    env_file:
+      - ../test/.env.test
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data_test:/var/lib/postgresql/data
+
+  test-app:
+    build:
+      context: ..
+      dockerfile: test/Dockerfile
+    ports:
+      - "8870:8869"
+    security_opt:
+      - seccomp=unconfined
+    env_file:
+      - ../test/.env.test
+    depends_on:
+      - db
+
+volumes:
+  postgres_data_test:

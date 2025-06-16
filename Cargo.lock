@@ -198,6 +198,7 @@ dependencies = [
  "iana-time-zone",
  "js-sys",
  "num-traits",
+ "serde",
  "wasm-bindgen",
  "windows-link",
 ]
@@ -321,6 +322,7 @@ checksum = "ff3e1edb1f37b4953dd5176916347289ed43d7119cc2e6c7c3f7849ff44ea506"
 dependencies = [
  "bitflags",
  "byteorder",
+ "chrono",
  "diesel_derives",
  "itoa",
  "pq-sys",
@@ -518,6 +520,7 @@ name = "giga-chess-server"
 version = "0.1.0"
 dependencies = [
  "axum",
+ "chrono",
  "diesel",
  "diesel_migrations",
  "dotenvy",

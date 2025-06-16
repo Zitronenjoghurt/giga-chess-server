@@ -25,8 +25,11 @@ impl Stores {
 pub trait Store<M: Model> {
     fn initialize(database: &Database) -> Arc<Self>;
     fn get_database(&self) -> &Database;
+    fn create(&self, new_entity: M::NewModel) -> AppResult<M>;
+    fn find(&self, id: M::PrimaryKeyType) -> AppResult<Option<M>>;
+    fn save(&self, entity: M) -> AppResult<M>;
+    fn delete(&self, id: M::PrimaryKeyType) -> AppResult<Option<M>>;
     fn get_connection(&self) -> AppResult<PooledConnection<ConnectionManager<PgConnection>>> {
         Ok(self.get_database().get_connection()?)
     }
-    fn create(&self, new_model: M::NewModel) -> AppResult<M>;
 }

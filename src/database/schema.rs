@@ -3,6 +3,8 @@
 diesel::table! {
     users (id) {
         id -> Int8,
+        created_at -> Timestamptz,
+        updated_at -> Timestamptz,
         token_hash -> Varchar,
     }
 }

@@ -1,0 +1,47 @@
+name: Test & Coverage
+on:
+  push:
+    branches: [ "main" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Start container
+        run: |
+          cd test
+          make up
+
+      - name: Install tarpaulin
+        run: |
+          cd test
+          docker compose exec -T test-app cargo install cargo-tarpaulin
+
+      - name: Generate coverage
+        run: |
+          cd test
+          docker compose exec -T test-app cargo tarpaulin --verbose --all-features --timeout 120 --out Xml -- --test-threads 1
+
+      - name: Copy coverage from container
+        run: |
+          cd test
+          docker compose cp test-app:/app/cobertura.xml ./cobertura.xml
+
+      - name: Upload to codecov.io
+        uses: codecov/codecov-action@v5
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          files: test/cobertura.xml
+          fail_ci_if_error: true
+
+      - name: Cleanup
+        if: always()
+        run: |
+          cd test
+          make clean
