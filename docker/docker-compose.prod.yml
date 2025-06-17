@@ -23,7 +23,7 @@ services:
     command: >
       sh -c "
         diesel migration run
-      
+        cargo install --path . --bin cli
         cargo run --release
       "
 

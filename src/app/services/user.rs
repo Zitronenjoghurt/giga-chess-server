@@ -42,6 +42,11 @@ impl UserService {
             return Err(AppError::InvalidInput("Invalid invite code".to_string()));
         };
 
+        let existing_user = self.user_store.find_by_name(name)?;
+        if existing_user.is_some() {
+            return Err(AppError::already_exists("Username"));
+        }
+
         invite_code.used = true;
         let invite_code = self.invite_code_store.save(invite_code)?;
         let password_hash = hash_bytes(password.as_bytes())?;

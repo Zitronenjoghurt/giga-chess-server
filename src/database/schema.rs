@@ -23,4 +23,7 @@ diesel::table! {
 
 diesel::joinable!(users -> invite_codes (invite_code_id));
 
-diesel::allow_tables_to_appear_in_same_query!(invite_codes, users,);
+diesel::allow_tables_to_appear_in_same_query!(
+    invite_codes,
+    users,
+);
