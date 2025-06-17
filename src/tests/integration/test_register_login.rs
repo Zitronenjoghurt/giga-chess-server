@@ -1,5 +1,7 @@
-use crate::api::models::login_response::LoginResponse;
-use crate::api::models::message_response::MessageResponse;
+use crate::api::models::body::login_data::LoginData;
+use crate::api::models::body::register_data::RegisterData;
+use crate::api::models::response::login::LoginResponse;
+use crate::api::models::response::message::MessageResponse;
 use crate::database::models::invite_code::NewInviteCode;
 use crate::database::stores::Store;
 use crate::tests::build_test_server;
@@ -19,12 +21,13 @@ async fn test_register_login() {
         .unwrap();
 
     // Register user
-    let registration_response = server
-        .put("/register")
-        .add_header("X-Invite-Code", invite_code.id.to_string())
-        .add_header("X-Username", USERNAME)
-        .add_header("X-Password", PASSWORD)
-        .await;
+    let register_data = RegisterData {
+        invite_code: invite_code.id.to_string(),
+        username: USERNAME.to_string(),
+        password: PASSWORD.to_string(),
+    };
+
+    let registration_response = server.post("/register").json(&register_data).await;
 
     assert_eq!(
         registration_response.status_code(),
@@ -50,11 +53,12 @@ async fn test_register_login() {
     assert!(invite_code.used);
 
     // Login user
-    let login_response = server
-        .post("/login")
-        .add_header("X-Username", USERNAME)
-        .add_header("X-Password", PASSWORD)
-        .await;
+    let login_data = LoginData {
+        username: USERNAME.to_string(),
+        password: PASSWORD.to_string(),
+    };
+
+    let login_response = server.post("/login").json(&login_data).await;
 
     assert_eq!(
         login_response.status_code(),

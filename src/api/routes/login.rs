@@ -1,13 +1,14 @@
 use crate::api::create_rate_limiter;
-use crate::api::extractors::login_data::LoginData;
-use crate::api::models::login_response::LoginResponse;
+use crate::api::models::body::login_data::LoginData;
+use crate::api::models::response::login::LoginResponse;
 use crate::app::error::{AppError, AppResult};
 use crate::app::security::{generate_jwt, verify_bytes};
 use crate::app::state::AppState;
 use axum::extract::State;
 use axum::response::IntoResponse;
 use axum::routing::post;
-use axum::Router;
+use axum::{Json, Router};
+use axum_valid::Valid;
 use std::time::Duration;
 
 const TOKEN_TTL_SECS: u64 = 60 * 60 * 24 * 7;
@@ -16,20 +17,19 @@ const TOKEN_TTL_SECS: u64 = 60 * 60 * 24 * 7;
 #[utoipa::path(
     post,
     path = "/login",
+    request_body = LoginData,
     responses(
         (status = 200, description = "Successfully logged in", body = LoginResponse),
-        (status = 400, description = "Invalid invite code or missing headers"),
+        (status = 400, description = "Invalid body"),
+        (status = 401, description = "Invalid credentials"),
+        (status = 429, description = "Too many requests"),
         (status = 500, description = "Server error"),
-    ),
-    params(
-        ("X-Username" = String, Header, description = "Your username"),
-        ("X-Password" = String, Header, description = "Your password")
     ),
     tag = "Auth"
 )]
 async fn post_login(
     State(state): State<AppState>,
-    data: LoginData,
+    data: Valid<Json<LoginData>>,
 ) -> AppResult<impl IntoResponse> {
     let Some(user) = state.stores.user.find_by_name(&data.username)? else {
         return Err(AppError::InvalidCredentials);

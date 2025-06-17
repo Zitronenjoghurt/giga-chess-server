@@ -12,7 +12,7 @@ use utoipa::OpenApi;
     paths(
         routes::login::post_login,
         routes::ping::get_ping,
-        routes::register::put_register,
+        routes::register::post_register,
     ),
     tags(
         (name = "Auth", description = "Authentication endpoints"),
@@ -20,8 +20,10 @@ use utoipa::OpenApi;
     ),
     components(
         schemas(
-            message_response::MessageResponse,
-            login_response::LoginResponse
+            body::login_data::LoginData,
+            body::register_data::RegisterData,
+            response::message::MessageResponse,
+            response::login::LoginResponse
         ),
     ),
     modifiers(&SecurityAddon)

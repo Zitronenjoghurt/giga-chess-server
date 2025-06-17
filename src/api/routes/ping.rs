@@ -1,5 +1,6 @@
+use crate::api::create_rate_limiter;
 use crate::api::extractors::authentication::AuthUser;
-use crate::api::models::message_response::MessageResponse;
+use crate::api::models::response::message::MessageResponse;
 use crate::app::state::AppState;
 use axum::response::IntoResponse;
 use axum::{routing::get, Router};
@@ -25,5 +26,7 @@ async fn get_ping(AuthUser(user): AuthUser) -> impl IntoResponse {
 }
 
 pub fn router() -> Router<AppState> {
-    Router::<AppState>::new().route("/", get(get_ping))
+    Router::<AppState>::new()
+        .route("/", get(get_ping))
+        .layer(create_rate_limiter(5, 60))
 }

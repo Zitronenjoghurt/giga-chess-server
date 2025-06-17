@@ -1,34 +1,32 @@
 use crate::api::create_rate_limiter;
-use crate::api::extractors::register_data::RegisterData;
-use crate::api::models::message_response::MessageResponse;
+use crate::api::models::body::register_data::RegisterData;
+use crate::api::models::response::message::MessageResponse;
 use crate::app::error::AppResult;
 use crate::app::state::AppState;
 use axum::extract::State;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
-use axum::routing::put;
-use axum::Router;
+use axum::routing::post;
+use axum::{Json, Router};
+use axum_valid::Valid;
 
 /// Register a new account by using a valid invite code.
 #[utoipa::path(
-    put,
+    post,
     path = "/register",
+    request_body = RegisterData,
     responses(
         (status = 201, description = "Successfully registered", body = MessageResponse),
-        (status = 400, description = "Invalid invite code or missing headers"),
+        (status = 400, description = "Invalid body"),
         (status = 409, description = "Username already exists"),
+        (status = 429, description = "Too many requests"),
         (status = 500, description = "Server error"),
-    ),
-    params(
-        ("X-Invite-Code" = String, Header, description = "Valid invite code for registration"),
-        ("X-Username" = String, Header, description = "Desired username for the new account"),
-        ("X-Password" = String, Header, description = "Password for the new account")
     ),
     tag = "Auth"
 )]
-async fn put_register(
+async fn post_register(
     State(state): State<AppState>,
-    data: RegisterData,
+    data: Valid<Json<RegisterData>>,
 ) -> AppResult<impl IntoResponse> {
     let _ = state
         .services
@@ -43,6 +41,6 @@ async fn put_register(
 
 pub fn router() -> Router<AppState> {
     Router::<AppState>::new()
-        .route("/register", put(put_register))
+        .route("/register", post(post_register))
         .layer(create_rate_limiter(5, 60))
 }

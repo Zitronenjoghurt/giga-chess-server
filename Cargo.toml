@@ -7,6 +7,7 @@ default-run = "giga-chess-server"
 [dependencies]
 argon2 = { version = "0.5.3", features = ["std"] }
 axum = { version = "0.8.4", features = ["http2", "ws"] }
+axum-valid = { version = "0.23.0", features = ["basic"] }
 chrono = { version = "0.4.41", features = ["serde"] }
 clap = { version = "4.5.40", features = ["derive"] }
 diesel = { version = "2.2.10", features = ["postgres", "r2d2", "chrono", "uuid"] }
@@ -26,6 +27,7 @@ utoipa = "5.3.1"
 utoipa-rapidoc = { version = "6.0.0", features = ["axum"] }
 utoipa-swagger-ui = { version = "9.0.2", features = ["axum"] }
 uuid = { version = "1.17.0", features = ["serde", "v4"] }
+validator = { version = "0.20.0", features = ["derive"] }
 
 [dev-dependencies]
 axum-test = "17.3.0"

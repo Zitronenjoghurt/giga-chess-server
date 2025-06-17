@@ -1,2 +1,2 @@
-pub mod login_response;
-pub mod message_response;
+pub mod body;
+pub mod response;
