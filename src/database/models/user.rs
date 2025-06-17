@@ -2,6 +2,7 @@ use crate::database::models::Model;
 use chrono::{DateTime, Utc};
 use diesel::{AsChangeset, Insertable, Queryable, Selectable};
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 #[derive(
     Debug, Queryable, Selectable, AsChangeset, Serialize, Deserialize, Clone, PartialEq, Eq,
@@ -9,30 +10,35 @@ use serde::{Deserialize, Serialize};
 #[diesel(table_name = crate::database::schema::users)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct User {
-    pub id: i64,
+    pub id: Uuid,
     pub name: String,
+    pub invite_code_id: Uuid,
+    pub password_hash: String,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
-    pub token_hash: String,
 }
 
 impl Model for User {
     type NewModel = NewUser;
-    type PrimaryKeyType = i64;
+    type PrimaryKeyType = Uuid;
 }
 
 #[derive(Insertable, Deserialize)]
 #[diesel(table_name = crate::database::schema::users)]
 pub struct NewUser {
+    id: Uuid,
     name: String,
-    token_hash: String,
+    invite_code_id: Uuid,
+    password_hash: String,
 }
 
 impl NewUser {
-    pub fn new(name: &str, token_hash: &str) -> Self {
+    pub fn new(name: &str, invite_code_id: Uuid, password_hash: &str) -> Self {
         Self {
+            id: Uuid::new_v4(),
             name: name.to_lowercase(),
-            token_hash: token_hash.to_string(),
+            invite_code_id,
+            password_hash: password_hash.to_string(),
         }
     }
 }

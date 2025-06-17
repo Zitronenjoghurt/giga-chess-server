@@ -1,23 +1,25 @@
 use crate::api::*;
+use axum::extract::connect_info::IntoMakeServiceWithConnectInfo;
 use axum::Router;
 use state::AppState;
+use std::net::SocketAddr;
 use utoipa::OpenApi;
 use utoipa_rapidoc::RapiDoc;
 use utoipa_swagger_ui::SwaggerUi;
 
+mod config;
 pub mod error;
 pub mod security;
+mod services;
 pub mod state;
 
-pub fn build_app() -> Router {
-    dotenvy::dotenv().ok();
-    let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-
-    let state = AppState::initialize(&database_url);
-
+pub fn build_app(state: AppState) -> IntoMakeServiceWithConnectInfo<Router, SocketAddr> {
     Router::<AppState>::new()
-        .merge(resources::ping::router())
+        .merge(routes::login::router())
+        .merge(routes::ping::router())
+        .merge(routes::register::router())
         .merge(SwaggerUi::new("/swagger").url("/api-docs/openapi.json", docs::ApiDoc::openapi()))
         .merge(RapiDoc::new("/api-docs/openapi.json").path("/docs"))
         .with_state(state)
+        .into_make_service_with_connect_info::<SocketAddr>()
 }

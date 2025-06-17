@@ -1,6 +1,9 @@
+mod integration;
 mod stores;
 
+use crate::app::build_app;
 use crate::app::state::AppState;
+use axum_test::TestServer;
 use std::env;
 
 pub fn build_test_app_state() -> AppState {
@@ -8,4 +11,10 @@ pub fn build_test_app_state() -> AppState {
     let state = AppState::initialize(&database_url);
     state.database.clear().unwrap();
     state
+}
+
+pub fn build_test_server() -> (TestServer, AppState) {
+    let state = build_test_app_state();
+    let app = build_app(state.clone());
+    (TestServer::new(app).unwrap(), state)
 }

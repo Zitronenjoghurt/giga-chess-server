@@ -17,7 +17,7 @@ use axum::{routing::get, Router};
     ),
     tag = "Misc",
     security(
-        ("UsernameAuth" = [], "TokenAuth" = [])
+        ("BearerAuth" = [])
     )
 )]
 async fn get_ping(AuthUser(user): AuthUser) -> impl IntoResponse {

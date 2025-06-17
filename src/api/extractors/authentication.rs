@@ -1,7 +1,8 @@
 use crate::app::error::AppError;
-use crate::app::security::verify_bytes;
+use crate::app::security::verify_jwt;
 use crate::app::state::AppState;
 use crate::database::models::user::User;
+use crate::database::stores::Store;
 use axum::extract::FromRequestParts;
 use axum::http::request::Parts;
 
@@ -16,29 +17,29 @@ impl FromRequestParts<AppState> for AuthUser {
     ) -> Result<Self, Self::Rejection> {
         let headers = &parts.headers;
 
-        let username = headers
-            .get("X-Username")
+        let auth_header = headers
+            .get("Authorization")
             .and_then(|v| v.to_str().ok())
             .ok_or(AppError::MissingCredentials(
-                "Missing X-Username header".to_string(),
+                "Missing Authorization header".to_string(),
             ))?;
 
-        let token = headers.get("X-Token").and_then(|v| v.to_str().ok()).ok_or(
-            AppError::MissingCredentials("Missing X-Token header".to_string()),
-        )?;
+        let token = auth_header
+            .strip_prefix("Bearer ")
+            .ok_or(AppError::MissingCredentials(
+                "Invalid Authorization header format".to_string(),
+            ))?;
 
-        let user = state.stores.user.find_by_name(username)?;
+        let claims = verify_jwt(token, &state.config.jwt_key)?;
 
-        let Some(user) = user else {
+        let Ok(uuid) = claims.get_uuid() else {
             return Err(AppError::InvalidCredentials);
         };
 
-        let is_token_valid = verify_bytes(token.as_bytes(), &user.token_hash)?;
+        let Some(user) = state.stores.user.find(uuid)? else {
+            return Err(AppError::InvalidCredentials);
+        };
 
-        if !is_token_valid {
-            Err(AppError::InvalidCredentials)
-        } else {
-            Ok(AuthUser(user))
-        }
+        Ok(AuthUser(user))
     }
 }

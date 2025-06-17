@@ -6,9 +6,10 @@ use crate::database::Database;
 use chrono::Utc;
 use diesel::prelude::*;
 use std::sync::Arc;
+use uuid::Uuid;
 
 pub struct UserStore {
-    database: Database,
+    database: Arc<Database>,
 }
 
 impl UserStore {
@@ -23,53 +24,53 @@ impl UserStore {
 }
 
 impl Store<User> for UserStore {
-    fn initialize(database: &Database) -> Arc<Self> {
+    fn initialize(database: &Arc<Database>) -> Arc<Self> {
         Arc::new(Self {
             database: database.clone(),
         })
     }
 
-    fn get_database(&self) -> &Database {
+    fn get_database(&self) -> &Arc<Database> {
         &self.database
     }
 
     fn create(&self, new_entity: NewUser) -> AppResult<User> {
         let mut conn = self.get_connection()?;
-        let user = diesel::insert_into(users::table)
+        let entity = diesel::insert_into(users::table)
             .values(new_entity)
             .get_result(&mut conn)?;
-        Ok(user)
+        Ok(entity)
     }
 
-    fn find(&self, id: i64) -> AppResult<Option<User>> {
+    fn find(&self, id: Uuid) -> AppResult<Option<User>> {
         let mut connection = self.get_connection()?;
-        let user = users::table
+        let entity = users::table
             .find(id)
             .first::<User>(&mut connection)
             .optional()?;
-        Ok(user)
+        Ok(entity)
     }
 
     fn save(&self, mut entity: User) -> AppResult<User> {
         let mut connection = self.get_connection()?;
         entity.updated_at = Utc::now();
 
-        let updated_user = diesel::update(users::table)
+        let updated_entity = diesel::update(users::table)
             .filter(users::id.eq(entity.id))
             .set(entity)
             .get_result::<User>(&mut connection)?;
 
-        Ok(updated_user)
+        Ok(updated_entity)
     }
 
-    fn delete(&self, id: i64) -> AppResult<Option<User>> {
+    fn delete(&self, id: Uuid) -> AppResult<Option<User>> {
         let mut connection = self.get_connection()?;
 
-        let user = diesel::delete(users::table)
+        let entity = diesel::delete(users::table)
             .filter(users::id.eq(id))
             .get_result::<User>(&mut connection)
             .optional()?;
 
-        Ok(user)
+        Ok(entity)
     }
 }

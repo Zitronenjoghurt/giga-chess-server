@@ -1,21 +1,28 @@
-use crate::api::resources;
-use utoipa::openapi::security::{ApiKey, ApiKeyValue, SecurityScheme};
+use crate::api::models::*;
+use crate::api::routes;
+use utoipa::openapi::security::{HttpAuthScheme, HttpBuilder, SecurityScheme};
 use utoipa::OpenApi;
 
 #[derive(OpenApi)]
 #[openapi(
     info(
-        title="GigaChess Online",
-        description="A giga-chess multiplayer server"
+        title = "GigaChess Online",
+        description = "A giga-chess multiplayer server"
     ),
     paths(
-        resources::ping::get_ping
+        routes::login::post_login,
+        routes::ping::get_ping,
+        routes::register::put_register,
     ),
     tags(
+        (name = "Auth", description = "Authentication endpoints"),
         (name = "Misc", description = "Miscellaneous endpoints")
     ),
     components(
-        schemas(),
+        schemas(
+            message_response::MessageResponse,
+            login_response::LoginResponse
+        ),
     ),
     modifiers(&SecurityAddon)
 )]
@@ -27,12 +34,13 @@ impl utoipa::Modify for SecurityAddon {
     fn modify(&self, openapi: &mut utoipa::openapi::OpenApi) {
         if let Some(components) = openapi.components.as_mut() {
             components.add_security_scheme(
-                "UsernameAuth",
-                SecurityScheme::ApiKey(ApiKey::Header(ApiKeyValue::new("X-Username"))),
-            );
-            components.add_security_scheme(
-                "TokenAuth",
-                SecurityScheme::ApiKey(ApiKey::Header(ApiKeyValue::new("X-Token"))),
+                "BearerAuth",
+                SecurityScheme::Http(
+                    HttpBuilder::new()
+                        .scheme(HttpAuthScheme::Bearer)
+                        .bearer_format("JWT")
+                        .build(),
+                ),
             );
         }
     }
