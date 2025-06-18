@@ -3,8 +3,7 @@ use utoipa::ToSchema;
 use validator::Validate;
 
 #[derive(Debug, Validate, Serialize, Deserialize, ToSchema)]
-pub struct RegisterData {
-    #[validate(skip)]
+pub struct RegisterBody {
     pub invite_code: String,
     #[validate(length(min = 3, max = 50))]
     pub username: String,

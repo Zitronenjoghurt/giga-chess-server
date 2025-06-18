@@ -16,3 +16,13 @@ CREATE TABLE IF NOT EXISTS users
     created_at     TIMESTAMPTZ    NOT NULL DEFAULT NOW(),
     updated_at     TIMESTAMPTZ    NOT NULL DEFAULT NOW()
 );
+
+CREATE TABLE IF NOT EXISTS rooms
+(
+    id         UUID PRIMARY KEY,
+    name       VARCHAR,
+    public     BOOLEAN     NOT NULL,
+    created_by UUID        NOT NULL REFERENCES users (id),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);

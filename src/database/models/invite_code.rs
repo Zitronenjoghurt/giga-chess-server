@@ -1,11 +1,20 @@
 use crate::database::models::Model;
 use chrono::{DateTime, Utc};
-use diesel::{AsChangeset, Insertable, Queryable, Selectable};
+use diesel::{AsChangeset, Identifiable, Insertable, Queryable, Selectable};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 #[derive(
-    Debug, Queryable, Selectable, AsChangeset, Serialize, Deserialize, Clone, PartialEq, Eq,
+    Debug,
+    Identifiable,
+    Queryable,
+    Selectable,
+    AsChangeset,
+    Serialize,
+    Deserialize,
+    Clone,
+    PartialEq,
+    Eq,
 )]
 #[diesel(table_name = crate::database::schema::invite_codes)]
 #[diesel(check_for_backend(diesel::pg::Pg))]

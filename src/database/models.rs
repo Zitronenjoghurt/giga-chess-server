@@ -1,4 +1,5 @@
 pub mod invite_code;
+pub mod room;
 pub mod user;
 
 pub trait Model {

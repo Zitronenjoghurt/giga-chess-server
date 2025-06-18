@@ -11,6 +11,8 @@ pub enum AppError {
     AlreadyExists { subject: String },
     #[error("An unexpected error occurred")]
     Argon2Hash(#[from] argon2::password_hash::Error),
+    #[error("Bad request: {0}")]
+    BadRequest(String),
     #[error("Database error")]
     DatabaseConnection(#[from] r2d2::Error),
     #[error("Database error")]
@@ -31,7 +33,7 @@ impl AppError {
     pub fn get_status_code(&self) -> StatusCode {
         match self {
             Self::AlreadyExists { .. } => StatusCode::CONFLICT,
-            Self::InvalidInput(_) => StatusCode::BAD_REQUEST,
+            Self::BadRequest(_) | Self::InvalidInput(_) => StatusCode::BAD_REQUEST,
             Self::InvalidCredentials | Self::MissingCredentials(_) | Self::JWT(_) => {
                 StatusCode::UNAUTHORIZED
             }
@@ -46,6 +48,10 @@ impl AppError {
         Self::AlreadyExists {
             subject: subject.to_string(),
         }
+    }
+
+    pub fn bad_request(message: &str) -> Self {
+        Self::BadRequest(message.to_string())
     }
 
     pub fn invalid_input(message: &str) -> Self {

@@ -1,5 +1,5 @@
-use crate::api::models::body::login_data::LoginData;
-use crate::api::models::body::register_data::RegisterData;
+use crate::api::models::body::login::LoginBody;
+use crate::api::models::body::register::RegisterBody;
 use crate::api::models::response::login::LoginResponse;
 use crate::api::models::response::message::MessageResponse;
 use crate::database::models::invite_code::NewInviteCode;
@@ -21,7 +21,7 @@ async fn test_register_login() {
         .unwrap();
 
     // Register user
-    let register_data = RegisterData {
+    let register_data = RegisterBody {
         invite_code: invite_code.id.to_string(),
         username: USERNAME.to_string(),
         password: PASSWORD.to_string(),
@@ -53,7 +53,7 @@ async fn test_register_login() {
     assert!(invite_code.used);
 
     // Login user
-    let login_data = LoginData {
+    let login_data = LoginBody {
         username: USERNAME.to_string(),
         password: PASSWORD.to_string(),
     };

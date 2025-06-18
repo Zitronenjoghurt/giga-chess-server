@@ -28,5 +28,5 @@ async fn get_ping(AuthUser(user): AuthUser) -> impl IntoResponse {
 pub fn router() -> Router<AppState> {
     Router::<AppState>::new()
         .route("/", get(get_ping))
-        .layer(create_rate_limiter(5, 60))
+        .layer(create_rate_limiter(5, 30))
 }

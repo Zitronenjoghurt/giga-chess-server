@@ -11,6 +11,17 @@ diesel::table! {
 }
 
 diesel::table! {
+    rooms (id) {
+        id -> Uuid,
+        name -> Nullable<Varchar>,
+        public -> Bool,
+        created_by -> Uuid,
+        created_at -> Timestamptz,
+        updated_at -> Timestamptz,
+    }
+}
+
+diesel::table! {
     users (id) {
         id -> Uuid,
         name -> Varchar,
@@ -21,9 +32,11 @@ diesel::table! {
     }
 }
 
+diesel::joinable!(rooms -> users (created_by));
 diesel::joinable!(users -> invite_codes (invite_code_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
     invite_codes,
+    rooms,
     users,
 );

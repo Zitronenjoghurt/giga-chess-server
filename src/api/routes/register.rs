@@ -1,5 +1,5 @@
 use crate::api::create_rate_limiter;
-use crate::api::models::body::register_data::RegisterData;
+use crate::api::models::body::register::RegisterBody;
 use crate::api::models::response::message::MessageResponse;
 use crate::app::error::AppResult;
 use crate::app::state::AppState;
@@ -14,7 +14,7 @@ use axum_valid::Valid;
 #[utoipa::path(
     post,
     path = "/register",
-    request_body = RegisterData,
+    request_body = RegisterBody,
     responses(
         (status = 201, description = "Successfully registered", body = MessageResponse),
         (status = 400, description = "Invalid body"),
@@ -26,7 +26,7 @@ use axum_valid::Valid;
 )]
 async fn post_register(
     State(state): State<AppState>,
-    data: Valid<Json<RegisterData>>,
+    data: Valid<Json<RegisterBody>>,
 ) -> AppResult<impl IntoResponse> {
     let _ = state
         .services
@@ -41,6 +41,6 @@ async fn post_register(
 
 pub fn router() -> Router<AppState> {
     Router::<AppState>::new()
-        .route("/register", post(post_register))
-        .layer(create_rate_limiter(5, 60))
+        .route("/", post(post_register))
+        .layer(create_rate_limiter(5, 30))
 }

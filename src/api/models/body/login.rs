@@ -3,9 +3,8 @@ use utoipa::ToSchema;
 use validator::Validate;
 
 #[derive(Debug, Validate, Serialize, Deserialize, ToSchema)]
-pub struct LoginData {
+pub struct LoginBody {
     #[validate(length(min = 3, max = 50))]
     pub username: String,
-    #[validate(skip)]
     pub password: String,
 }

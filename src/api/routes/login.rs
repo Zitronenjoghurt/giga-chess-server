@@ -1,5 +1,5 @@
 use crate::api::create_rate_limiter;
-use crate::api::models::body::login_data::LoginData;
+use crate::api::models::body::login::LoginBody;
 use crate::api::models::response::login::LoginResponse;
 use crate::app::error::{AppError, AppResult};
 use crate::app::security::{generate_jwt, verify_bytes};
@@ -17,7 +17,7 @@ const TOKEN_TTL_SECS: u64 = 60 * 60 * 24 * 7;
 #[utoipa::path(
     post,
     path = "/login",
-    request_body = LoginData,
+    request_body = LoginBody,
     responses(
         (status = 200, description = "Successfully logged in", body = LoginResponse),
         (status = 400, description = "Invalid body"),
@@ -29,7 +29,7 @@ const TOKEN_TTL_SECS: u64 = 60 * 60 * 24 * 7;
 )]
 async fn post_login(
     State(state): State<AppState>,
-    data: Valid<Json<LoginData>>,
+    data: Valid<Json<LoginBody>>,
 ) -> AppResult<impl IntoResponse> {
     let Some(user) = state.stores.user.find_by_name(&data.username)? else {
         return Err(AppError::InvalidCredentials);
@@ -52,6 +52,6 @@ async fn post_login(
 
 pub fn router() -> Router<AppState> {
     Router::<AppState>::new()
-        .route("/login", post(post_login))
-        .layer(create_rate_limiter(5, 60))
+        .route("/", post(post_login))
+        .layer(create_rate_limiter(5, 30))
 }

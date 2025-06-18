@@ -1,6 +1,7 @@
 use crate::app::error::AppResult;
 use crate::database::models::Model;
 use crate::database::stores::invite_code::InviteCodeStore;
+use crate::database::stores::room::RoomStore;
 use crate::database::stores::user::UserStore;
 use crate::database::Database;
 use diesel::r2d2::ConnectionManager;
@@ -9,11 +10,13 @@ use r2d2::PooledConnection;
 use std::sync::Arc;
 
 pub mod invite_code;
+pub mod room;
 pub mod user;
 
 #[derive(Clone)]
 pub struct Stores {
     pub invite_code: Arc<InviteCodeStore>,
+    pub room: Arc<RoomStore>,
     pub user: Arc<UserStore>,
 }
 
@@ -21,6 +24,7 @@ impl Stores {
     pub fn initialize(database: &Arc<Database>) -> Arc<Self> {
         Arc::new(Self {
             invite_code: InviteCodeStore::initialize(database),
+            room: RoomStore::initialize(database),
             user: UserStore::initialize(database),
         })
     }

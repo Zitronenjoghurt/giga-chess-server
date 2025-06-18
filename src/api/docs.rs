@@ -13,17 +13,21 @@ use utoipa::OpenApi;
         routes::login::post_login,
         routes::ping::get_ping,
         routes::register::post_register,
+        routes::room::post_room,
     ),
     tags(
         (name = "Auth", description = "Authentication endpoints"),
-        (name = "Misc", description = "Miscellaneous endpoints")
+        (name = "Misc", description = "Miscellaneous endpoints"),
+        (name = "Rooms", description = "Room endpoints"),
     ),
     components(
         schemas(
-            body::login_data::LoginData,
-            body::register_data::RegisterData,
+            body::login::LoginBody,
+            body::register::RegisterBody,
+            body::room_creation::RoomCreationBody,
             response::message::MessageResponse,
-            response::login::LoginResponse
+            response::login::LoginResponse,
+            response::room_creation::RoomCreationResponse,
         ),
     ),
     modifiers(&SecurityAddon)
