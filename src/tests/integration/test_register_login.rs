@@ -72,7 +72,7 @@ async fn test_register_login() {
 
     // Check that user was logged in
     let ping_response = server
-        .get("/")
+        .get("/ping")
         .add_header("Authorization", format!("Bearer {}", login_json.token))
         .await;
 

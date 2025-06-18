@@ -10,7 +10,7 @@ use axum::{routing::get, Router};
 /// This endpoint returns a simple pong message to indicate that the API is responsive.
 #[utoipa::path(
     get,
-    path = "/",
+    path = "/ping",
     responses(
         (status = 200, description = "Pong", body = MessageResponse),
         (status = 401, description = "Unauthorized"),
