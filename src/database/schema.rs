@@ -15,6 +15,8 @@ diesel::table! {
         id -> Uuid,
         name -> Nullable<Varchar>,
         public -> Bool,
+        player_white -> Nullable<Uuid>,
+        player_black -> Nullable<Uuid>,
         created_by -> Uuid,
         created_at -> Timestamptz,
         updated_at -> Timestamptz,
@@ -32,7 +34,6 @@ diesel::table! {
     }
 }
 
-diesel::joinable!(rooms -> users (created_by));
 diesel::joinable!(users -> invite_codes (invite_code_id));
 
 diesel::allow_tables_to_appear_in_same_query!(

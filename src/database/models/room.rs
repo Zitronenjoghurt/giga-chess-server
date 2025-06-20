@@ -2,6 +2,7 @@ use crate::database::models::user::User;
 use crate::database::models::Model;
 use chrono::{DateTime, Utc};
 use diesel::{AsChangeset, Associations, Identifiable, Insertable, Queryable, Selectable};
+use giga_chess::prelude::Color;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -25,6 +26,8 @@ pub struct Room {
     pub id: Uuid,
     pub name: Option<String>,
     pub public: bool,
+    pub player_white: Option<Uuid>,
+    pub player_black: Option<Uuid>,
     pub created_by: Uuid,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
@@ -41,15 +44,29 @@ pub struct NewRoom {
     pub id: Uuid,
     pub name: Option<String>,
     pub public: bool,
+    pub player_white: Option<Uuid>,
+    pub player_black: Option<Uuid>,
     pub created_by: Uuid,
 }
 
 impl NewRoom {
-    pub fn new(name: Option<String>, public: bool, created_by: Uuid) -> Self {
+    pub fn new(name: Option<String>, public: bool, created_by: Uuid, creator_color: Color) -> Self {
+        let player_white = match creator_color {
+            Color::White => Some(created_by),
+            Color::Black => None,
+        };
+
+        let player_black = match creator_color {
+            Color::White => None,
+            Color::Black => Some(created_by),
+        };
+
         Self {
             id: Uuid::new_v4(),
             name,
             public,
+            player_white,
+            player_black,
             created_by,
         }
     }

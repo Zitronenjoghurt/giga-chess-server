@@ -13,6 +13,7 @@ use utoipa::OpenApi;
         routes::login::post_login,
         routes::ping::get_ping,
         routes::register::post_register,
+        routes::room::get_room,
         routes::room::post_room,
     ),
     tags(
@@ -25,9 +26,14 @@ use utoipa::OpenApi;
             body::login::LoginBody,
             body::register::RegisterBody,
             body::room_creation::RoomCreationBody,
+            general::pagination::Pagination,
+            query::pagination::PaginationQuery,
             response::message::MessageResponse,
             response::login::LoginResponse,
             response::room_creation::RoomCreationResponse,
+            response::room_info::PublicRoomInfo,
+            response::room_list::PublicRoomList,
+            response::user_info::PublicUserInfo,
         ),
     ),
     modifiers(&SecurityAddon)

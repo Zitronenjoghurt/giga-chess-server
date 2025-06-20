@@ -36,7 +36,7 @@ impl FromRequestParts<AppState> for AuthUser {
             return Err(AppError::InvalidCredentials);
         };
 
-        let Some(user) = state.stores.user.find(uuid)? else {
+        let Some(user) = state.stores.user.find(uuid).await? else {
             return Err(AppError::InvalidCredentials);
         };
 

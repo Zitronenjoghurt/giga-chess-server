@@ -1,3 +1,4 @@
+use crate::app::config::Config;
 use crate::app::error::AppResult;
 use crate::database::models::Model;
 use crate::database::stores::invite_code::InviteCodeStore;
@@ -21,22 +22,22 @@ pub struct Stores {
 }
 
 impl Stores {
-    pub fn initialize(database: &Arc<Database>) -> Arc<Self> {
+    pub fn initialize(config: &Arc<Config>, database: &Arc<Database>) -> Arc<Self> {
         Arc::new(Self {
-            invite_code: InviteCodeStore::initialize(database),
-            room: RoomStore::initialize(database),
-            user: UserStore::initialize(database),
+            invite_code: InviteCodeStore::initialize(config, database),
+            room: RoomStore::initialize(config, database),
+            user: UserStore::initialize(config, database),
         })
     }
 }
 
 pub trait Store<M: Model> {
-    fn initialize(database: &Arc<Database>) -> Arc<Self>;
+    fn initialize(config: &Arc<Config>, database: &Arc<Database>) -> Arc<Self>;
     fn get_database(&self) -> &Arc<Database>;
-    fn create(&self, new_entity: M::NewModel) -> AppResult<M>;
-    fn find(&self, id: M::PrimaryKeyType) -> AppResult<Option<M>>;
-    fn save(&self, entity: M) -> AppResult<M>;
-    fn delete(&self, id: M::PrimaryKeyType) -> AppResult<Option<M>>;
+    async fn create(&self, new_entity: M::NewModel) -> AppResult<M>;
+    async fn find(&self, id: M::PrimaryKeyType) -> AppResult<Option<M>>;
+    async fn save(&self, entity: M) -> AppResult<M>;
+    async fn delete(&self, id: M::PrimaryKeyType) -> AppResult<Option<M>>;
     fn get_connection(&self) -> AppResult<PooledConnection<ConnectionManager<PgConnection>>> {
         Ok(self.get_database().get_connection()?)
     }

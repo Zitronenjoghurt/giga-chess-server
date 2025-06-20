@@ -8,7 +8,7 @@ use utoipa::OpenApi;
 use utoipa_rapidoc::RapiDoc;
 use utoipa_swagger_ui::SwaggerUi;
 
-mod config;
+pub mod config;
 pub mod error;
 pub mod security;
 mod services;

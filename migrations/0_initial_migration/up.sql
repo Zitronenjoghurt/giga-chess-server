@@ -19,10 +19,12 @@ CREATE TABLE IF NOT EXISTS users
 
 CREATE TABLE IF NOT EXISTS rooms
 (
-    id         UUID PRIMARY KEY,
-    name       VARCHAR,
-    public     BOOLEAN     NOT NULL,
-    created_by UUID        NOT NULL REFERENCES users (id),
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    id           UUID PRIMARY KEY,
+    name         VARCHAR,
+    public       BOOLEAN     NOT NULL,
+    player_white UUID REFERENCES users (id),
+    player_black uuid REFERENCES users (id),
+    created_by   UUID        NOT NULL REFERENCES users (id),
+    created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

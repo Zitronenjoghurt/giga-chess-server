@@ -1,15 +1,13 @@
 use crate::api::create_rate_limiter;
 use crate::api::models::body::login::LoginBody;
 use crate::api::models::response::login::LoginResponse;
-use crate::app::error::{AppError, AppResult};
-use crate::app::security::{generate_jwt, verify_bytes};
+use crate::app::error::AppResult;
 use crate::app::state::AppState;
 use axum::extract::State;
 use axum::response::IntoResponse;
 use axum::routing::post;
 use axum::{Json, Router};
 use axum_valid::Valid;
-use std::time::Duration;
 
 const TOKEN_TTL_SECS: u64 = 60 * 60 * 24 * 7;
 
@@ -31,22 +29,11 @@ async fn post_login(
     State(state): State<AppState>,
     data: Valid<Json<LoginBody>>,
 ) -> AppResult<impl IntoResponse> {
-    let Some(user) = state.stores.user.find_by_name(&data.username)? else {
-        return Err(AppError::InvalidCredentials);
-    };
-
-    if !verify_bytes(data.password.as_bytes(), &user.password_hash)? {
-        return Err(AppError::InvalidCredentials);
-    }
-
-    let Ok(jwt) = generate_jwt(
-        &user,
-        &state.config.jwt_key,
-        Duration::from_secs(TOKEN_TTL_SECS),
-    ) else {
-        return Err(AppError::InvalidCredentials);
-    };
-
+    let jwt = state
+        .services
+        .user
+        .login(&data.username, &data.password)
+        .await?;
     Ok(LoginResponse::new(&jwt, "Bearer", TOKEN_TTL_SECS))
 }
 

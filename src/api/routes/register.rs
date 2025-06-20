@@ -31,7 +31,8 @@ async fn post_register(
     let _ = state
         .services
         .user
-        .register(&data.invite_code, &data.username, &data.password)?;
+        .register(&data.invite_code, &data.username, &data.password)
+        .await?;
 
     Ok((
         StatusCode::CREATED,

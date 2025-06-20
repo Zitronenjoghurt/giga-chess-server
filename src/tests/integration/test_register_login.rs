@@ -18,6 +18,7 @@ async fn test_register_login() {
         .stores
         .invite_code
         .create(NewInviteCode::new())
+        .await
         .unwrap();
 
     // Register user
@@ -41,13 +42,20 @@ async fn test_register_login() {
     assert_eq!(registration_json.message, "Successfully registered");
 
     // Check that user was created and invite code was used
-    let user = state.stores.user.find_by_name(USERNAME).unwrap().unwrap();
+    let user = state
+        .stores
+        .user
+        .find_by_name(USERNAME)
+        .await
+        .unwrap()
+        .unwrap();
     assert_eq!(user.invite_code_id, invite_code.id);
 
     let invite_code = state
         .stores
         .invite_code
         .find(invite_code.id)
+        .await
         .unwrap()
         .unwrap();
     assert!(invite_code.used);

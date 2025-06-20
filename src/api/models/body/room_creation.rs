@@ -1,4 +1,5 @@
 use crate::database::models::room::NewRoom;
+use giga_chess::prelude::Color;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use uuid::Uuid;
@@ -14,6 +15,6 @@ pub struct RoomCreationBody {
 
 impl RoomCreationBody {
     pub fn get_new_room(&self, created_by: Uuid) -> NewRoom {
-        NewRoom::new(self.name.clone(), self.public, created_by)
+        NewRoom::new(self.name.clone(), self.public, created_by, Color::random())
     }
 }

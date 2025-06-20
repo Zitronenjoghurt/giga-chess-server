@@ -16,12 +16,13 @@ pub struct AppState {
 
 impl AppState {
     pub fn initialize(database_url: &str) -> Self {
+        let config = Config::initialize();
         let database = Arc::new(Database::connect(database_url).unwrap());
-        let stores = Stores::initialize(&database);
-        let services = Services::initialize(&stores);
+        let stores = Stores::initialize(&config, &database);
+        let services = Services::initialize(&config, &stores);
 
         Self {
-            config: Config::initialize(),
+            config,
             database,
             engine: Engine::initialize(),
             services,

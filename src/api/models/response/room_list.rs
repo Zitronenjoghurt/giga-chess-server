@@ -1,22 +1,17 @@
+use crate::api::models::general::pagination::Pagination;
+use crate::api::models::response::room_info::PublicRoomInfo;
 use axum::response::{IntoResponse, Response};
 use axum::Json;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
 #[derive(Serialize, Deserialize, ToSchema)]
-pub struct MessageResponse {
-    pub message: String,
+pub struct PublicRoomList {
+    pub rooms: Vec<PublicRoomInfo>,
+    pub pagination: Pagination,
 }
 
-impl MessageResponse {
-    pub fn new(message: &str) -> Self {
-        Self {
-            message: message.to_string(),
-        }
-    }
-}
-
-impl IntoResponse for MessageResponse {
+impl IntoResponse for PublicRoomList {
     fn into_response(self) -> Response {
         Json(self).into_response()
     }
