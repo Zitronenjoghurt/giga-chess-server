@@ -24,7 +24,8 @@ thiserror = "2.0.12"
 tokio = { version = "1.45.1", features = ["macros", "rt-multi-thread"] }
 tower_governor = "0.7.0"
 tracing = "0.1.41"
-tracing-subscriber = "0.3.19"
+tracing-appender = "0.2.3"
+tracing-subscriber = { version = "0.3.19", features = ["env-filter", "json"] }
 utoipa = "5.3.1"
 utoipa-rapidoc = { version = "6.0.0", features = ["axum"] }
 utoipa-swagger-ui = { version = "9.0.2", features = ["axum"] }

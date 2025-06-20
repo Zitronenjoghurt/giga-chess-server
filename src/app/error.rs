@@ -64,8 +64,13 @@ impl IntoResponse for AppError {
         let status = self.get_status_code();
         let message = self.to_string();
 
-        if let Self::JWT(error) = self {
-            error!("JWT error: {}", error);
+        match self {
+            Self::Argon2Hash(error) => error!("Argon2 hash error: {}", error),
+            Self::DatabaseConnection(error) => error!("Database connection error: {}", error),
+            Self::DatabaseMigrationError(error) => error!("Database migration error: {}", error),
+            Self::DatabaseQuery(error) => error!("Database query error: {}", error),
+            Self::JWT(error) => error!("JWT error: {}", error),
+            _ => (),
         }
 
         (status, message).into_response()

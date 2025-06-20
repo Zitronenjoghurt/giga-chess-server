@@ -29,6 +29,7 @@ services:
       - ../diesel.toml:/app/diesel.toml
       - ../src:/app/src
       - ../migrations:/app/migrations
+      - ../logs:/app/logs
       - cargo_cache:/usr/local/cargo
       - target_cache:/app/target
     depends_on:
@@ -38,7 +39,7 @@ services:
       sh -c "
         diesel migration run
         cargo install --path . --bin cli
-        cargo watch -x run
+        cargo watch -w src -w Cargo.toml -x run
       "
 
 volumes:

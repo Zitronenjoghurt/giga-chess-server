@@ -23,6 +23,8 @@ services:
       - "8869:8869"
     env_file:
       - ../config/.env.prod
+    volumes:
+      - ../logs:/app/logs
     depends_on:
       db:
         condition: service_healthy
