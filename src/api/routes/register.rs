@@ -10,7 +10,9 @@ use axum::routing::post;
 use axum::{Json, Router};
 use axum_valid::Valid;
 
-/// Register a new account by using a valid invite code.
+/// Register a new account.
+///
+/// A valid invite code will have to be provided. Administrators can generate invite codes through the CLI.
 #[utoipa::path(
     post,
     path = "/register",

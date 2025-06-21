@@ -5,7 +5,7 @@ use crate::app::state::AppState;
 use axum::response::IntoResponse;
 use axum::{routing::get, Router};
 
-/// Ping the API for a response.
+/// Ping the API.
 ///
 /// This endpoint returns a simple pong message to indicate that the API is responsive.
 #[utoipa::path(

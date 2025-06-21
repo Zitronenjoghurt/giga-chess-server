@@ -6,15 +6,17 @@ default-run = "giga-chess-server"
 
 [dependencies]
 argon2 = { version = "0.5.3", features = ["std"] }
+async-trait = "0.1.88"
 axum = { version = "0.8.4", features = ["http2", "ws"] }
 axum-valid = { version = "0.23.0", features = ["basic"] }
+bincode = "2.0.1"
 chrono = { version = "0.4.41", features = ["serde"] }
 clap = { version = "4.5.40", features = ["derive"] }
 diesel = { version = "2.2.10", features = ["postgres", "r2d2", "chrono", "uuid"] }
 diesel_migrations = { version = "2.2.0", features = ["postgres"] }
 dotenvy = "0.15.7"
 futures = "0.3.31"
-giga-chess = "0.8.1"
+giga-chess = { version = "0.8.2", features = ["bincode"] }
 governor = "0.8.0"
 jsonwebtoken = "9.3.1"
 moka = { version = "0.12.10", features = ["future"] }

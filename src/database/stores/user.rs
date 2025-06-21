@@ -4,6 +4,7 @@ use crate::database::models::user::{NewUser, User};
 use crate::database::schema::users;
 use crate::database::stores::Store;
 use crate::database::Database;
+use async_trait::async_trait;
 use chrono::Utc;
 use diesel::prelude::*;
 use moka::future::Cache;
@@ -27,6 +28,7 @@ impl UserStore {
     }
 }
 
+#[async_trait]
 impl Store<User> for UserStore {
     fn initialize(config: &Arc<Config>, database: &Arc<Database>) -> Arc<Self> {
         let find_cache = Cache::builder()

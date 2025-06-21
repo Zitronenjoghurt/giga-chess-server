@@ -27,6 +27,10 @@ pub enum AppError {
     JWT(#[from] jsonwebtoken::errors::Error),
     #[error("Missing credentials: {0}")]
     MissingCredentials(String),
+    #[error("{subject} not found")]
+    NotFound { subject: String },
+    #[error("Serialization error")]
+    Serialization(String),
 }
 
 impl AppError {
@@ -40,7 +44,9 @@ impl AppError {
             Self::Argon2Hash(_)
             | Self::DatabaseConnection(_)
             | Self::DatabaseQuery(_)
-            | Self::DatabaseMigrationError(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            | Self::DatabaseMigrationError(_)
+            | Self::Serialization(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            Self::NotFound { .. } => StatusCode::NOT_FOUND,
         }
     }
 
@@ -57,6 +63,12 @@ impl AppError {
     pub fn invalid_input(message: &str) -> Self {
         Self::InvalidInput(message.to_string())
     }
+
+    pub fn not_found(subject: &str) -> Self {
+        Self::NotFound {
+            subject: subject.to_string(),
+        }
+    }
 }
 
 impl IntoResponse for AppError {
@@ -70,6 +82,7 @@ impl IntoResponse for AppError {
             Self::DatabaseMigrationError(error) => error!("Database migration error: {}", error),
             Self::DatabaseQuery(error) => error!("Database query error: {}", error),
             Self::JWT(error) => error!("JWT error: {}", error),
+            Self::Serialization(error) => error!("Serialization error: {}", error),
             _ => (),
         }
 

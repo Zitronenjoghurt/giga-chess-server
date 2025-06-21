@@ -1,7 +1,7 @@
 use crate::app::config::Config;
 use crate::app::error::AppResult;
-use crate::database::models::invite_code::{InviteCode, NewInviteCode};
-use crate::database::schema::invite_codes;
+use crate::database::models::session::{NewSession, Session};
+use crate::database::schema::sessions;
 use crate::database::stores::Store;
 use crate::database::Database;
 use async_trait::async_trait;
@@ -10,12 +10,12 @@ use diesel::prelude::*;
 use std::sync::Arc;
 use uuid::Uuid;
 
-pub struct InviteCodeStore {
+pub struct SessionStore {
     database: Arc<Database>,
 }
 
 #[async_trait]
-impl Store<InviteCode> for InviteCodeStore {
+impl Store<Session> for SessionStore {
     fn initialize(_config: &Arc<Config>, database: &Arc<Database>) -> Arc<Self> {
         Arc::new(Self {
             database: database.clone(),
@@ -26,41 +26,41 @@ impl Store<InviteCode> for InviteCodeStore {
         &self.database
     }
 
-    async fn create(&self, new_entity: NewInviteCode) -> AppResult<InviteCode> {
+    async fn create(&self, new_entity: NewSession) -> AppResult<Session> {
         let mut conn = self.get_connection()?;
-        let user = diesel::insert_into(invite_codes::table)
+        let entity = diesel::insert_into(sessions::table)
             .values(new_entity)
             .get_result(&mut conn)?;
-        Ok(user)
+        Ok(entity)
     }
 
-    async fn find(&self, id: Uuid) -> AppResult<Option<InviteCode>> {
+    async fn find(&self, id: Uuid) -> AppResult<Option<Session>> {
         let mut connection = self.get_connection()?;
-        let entity = invite_codes::table
+        let entity = sessions::table
             .find(id)
-            .first::<InviteCode>(&mut connection)
+            .first::<Session>(&mut connection)
             .optional()?;
         Ok(entity)
     }
 
-    async fn save(&self, mut entity: InviteCode) -> AppResult<InviteCode> {
+    async fn save(&self, mut entity: Session) -> AppResult<Session> {
         let mut connection = self.get_connection()?;
         entity.updated_at = Utc::now();
 
-        let updated_entity = diesel::update(invite_codes::table)
-            .filter(invite_codes::id.eq(entity.id))
+        let updated_entity = diesel::update(sessions::table)
+            .filter(sessions::id.eq(entity.id))
             .set(entity)
-            .get_result::<InviteCode>(&mut connection)?;
+            .get_result::<Session>(&mut connection)?;
 
         Ok(updated_entity)
     }
 
-    async fn delete(&self, id: Uuid) -> AppResult<Option<InviteCode>> {
+    async fn delete(&self, id: Uuid) -> AppResult<Option<Session>> {
         let mut connection = self.get_connection()?;
 
-        let entity = diesel::delete(invite_codes::table)
-            .filter(invite_codes::id.eq(id))
-            .get_result::<InviteCode>(&mut connection)
+        let entity = diesel::delete(sessions::table)
+            .filter(sessions::id.eq(id))
+            .get_result::<Session>(&mut connection)
             .optional()?;
 
         Ok(entity)

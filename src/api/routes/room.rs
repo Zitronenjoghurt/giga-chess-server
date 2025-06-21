@@ -2,7 +2,7 @@ use crate::api::create_rate_limiter;
 use crate::api::extractors::authentication::AuthUser;
 use crate::api::models::body::room_creation::RoomCreationBody;
 use crate::api::models::query::pagination::PaginationQuery;
-use crate::api::models::response::room_creation::RoomCreationResponse;
+use crate::api::models::response::room_info::PrivateRoomInfo;
 use crate::api::models::response::room_list::PublicRoomList;
 use crate::app::error::{AppError, AppResult};
 use crate::app::state::AppState;
@@ -13,6 +13,8 @@ use axum::response::IntoResponse;
 use axum::routing::{get, post};
 use axum::{Json, Router};
 use axum_valid::Valid;
+
+pub mod join;
 
 /// Get a list of public rooms.
 #[utoipa::path(
@@ -44,13 +46,15 @@ async fn get_room(
     Ok((StatusCode::OK, list))
 }
 
-/// Create a new room that people will be able to join to start a session.
+/// Create a new room.
+///
+/// People will be able to join to start a session
 #[utoipa::path(
     post,
     path = "/room",
     request_body = RoomCreationBody,
     responses(
-        (status = 201, description = "Successfully created", body = RoomCreationResponse),
+        (status = 201, description = "Successfully created", body = PrivateRoomInfo),
         (status = 400, description = "Invalid body or room limit reached"),
         (status = 401, description = "Invalid credentials"),
         (status = 429, description = "Too many requests"),
@@ -77,11 +81,25 @@ async fn post_room(
     let new_room = data.get_new_room(user.id);
     let room = state.stores.room.create(new_room).await?;
 
-    Ok((StatusCode::CREATED, RoomCreationResponse::from_room(&room)))
+    let user_white = if room.player_white.is_some() {
+        Some(&user)
+    } else {
+        None
+    };
+
+    let user_black = if room.player_black.is_some() {
+        Some(&user)
+    } else {
+        None
+    };
+
+    let info = PrivateRoomInfo::from_room_and_players(&room, user_white, user_black);
+    Ok((StatusCode::CREATED, info))
 }
 
 pub fn router() -> Router<AppState> {
     Router::new()
         .route("/", get(get_room).layer(create_rate_limiter(5, 30)))
         .route("/", post(post_room).layer(create_rate_limiter(5, 30)))
+        .nest("/join", join::router())
 }

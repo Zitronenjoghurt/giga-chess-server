@@ -11,7 +11,9 @@ use axum_valid::Valid;
 
 const TOKEN_TTL_SECS: u64 = 60 * 60 * 24 * 7;
 
-/// Log-in to your account and receive an authentication token.
+/// Login to your account.
+///
+/// This will create an authentication token that needs to be provided in the Authorization header.
 #[utoipa::path(
     post,
     path = "/login",

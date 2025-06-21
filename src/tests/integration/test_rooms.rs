@@ -12,6 +12,8 @@ async fn test_rooms() {
     let room_creation = RoomCreationBody {
         name: Some("Get Rekt".to_string()),
         public: true,
+        time_micros: None,
+        increment_micros: None,
     };
     let creation_response = server
         .post("/room")
@@ -29,6 +31,8 @@ async fn test_rooms() {
     let room_creation2 = RoomCreationBody {
         name: None,
         public: false,
+        time_micros: None,
+        increment_micros: None,
     };
     let creation_response2 = server
         .post("/room")

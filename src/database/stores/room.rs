@@ -5,6 +5,7 @@ use crate::database::models::user::User;
 use crate::database::schema::rooms;
 use crate::database::stores::Store;
 use crate::database::Database;
+use async_trait::async_trait;
 use chrono::Utc;
 use diesel::prelude::*;
 use std::sync::Arc;
@@ -49,6 +50,7 @@ impl RoomStore {
     }
 }
 
+#[async_trait]
 impl Store<Room> for RoomStore {
     fn initialize(_config: &Arc<Config>, database: &Arc<Database>) -> Arc<Self> {
         Arc::new(Self {

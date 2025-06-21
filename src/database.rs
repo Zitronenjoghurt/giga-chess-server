@@ -7,6 +7,7 @@ use r2d2::PooledConnection;
 pub mod models;
 pub mod schema;
 pub mod stores;
+pub mod types;
 
 pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!("migrations");
 
