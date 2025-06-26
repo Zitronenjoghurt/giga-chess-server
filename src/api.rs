@@ -6,7 +6,6 @@ use tower_governor::GovernorLayer;
 
 pub mod docs;
 mod extractors;
-pub mod models;
 pub mod routes;
 
 pub fn create_rate_limiter(

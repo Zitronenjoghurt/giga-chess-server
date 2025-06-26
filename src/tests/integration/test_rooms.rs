@@ -1,6 +1,6 @@
-use crate::api::models::body::room_creation::RoomCreationBody;
-use crate::api::models::response::room_list::PublicRoomList;
 use crate::tests::build_test_server_with_user;
+use giga_chess_api_types::body::room_creation::RoomCreationBody;
+use giga_chess_api_types::response::room_list::PublicRoomList;
 
 const USERNAME: &str = "test_user";
 const PASSWORD: &str = "testtest";

@@ -17,6 +17,7 @@ diesel_migrations = { version = "2.2.0", features = ["postgres"] }
 dotenvy = "0.15.7"
 futures = "0.3.31"
 giga-chess = { version = "0.8.2", features = ["bincode"] }
+giga-chess-api-types = { path = "types", features = ["all"] }
 governor = "0.8.0"
 jsonwebtoken = "9.3.1"
 moka = { version = "0.12.10", features = ["future"] }
@@ -28,7 +29,7 @@ tower_governor = "0.7.0"
 tracing = "0.1.41"
 tracing-appender = "0.2.3"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter", "json"] }
-utoipa = "5.3.1"
+utoipa = "5.4.0"
 utoipa-rapidoc = { version = "6.0.0", features = ["axum"] }
 utoipa-swagger-ui = { version = "9.0.2", features = ["axum"] }
 uuid = { version = "1.17.0", features = ["serde", "v4"] }

@@ -3,6 +3,8 @@ use crate::database::models::Model;
 use chrono::{DateTime, Utc};
 use diesel::{AsChangeset, Associations, Identifiable, Insertable, Queryable, Selectable};
 use giga_chess::prelude::Color;
+use giga_chess_api_types::body::room_creation::RoomCreationBody;
+use giga_chess_api_types::response::room_info::{PrivateRoomInfo, PublicRoomInfo};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -53,6 +55,39 @@ impl Room {
     pub fn can_join(&self) -> bool {
         self.player_white.is_none() || self.player_black.is_none()
     }
+
+    pub fn get_private_info(
+        &self,
+        user_white: Option<&User>,
+        user_black: Option<&User>,
+    ) -> PrivateRoomInfo {
+        let white = user_white.map(User::get_public_info);
+        let black = user_black.map(User::get_public_info);
+
+        PrivateRoomInfo {
+            uuid: self.id.to_string(),
+            name: self.name.clone(),
+            public: self.public,
+            white,
+            black,
+        }
+    }
+
+    pub fn get_public_info(
+        &self,
+        user_white: Option<&User>,
+        user_black: Option<&User>,
+    ) -> PublicRoomInfo {
+        let white = user_white.map(User::get_public_info);
+        let black = user_black.map(User::get_public_info);
+
+        PublicRoomInfo {
+            uuid: self.id.to_string(),
+            name: self.name.clone(),
+            white,
+            black,
+        }
+    }
 }
 
 impl Model for Room {
@@ -102,5 +137,16 @@ impl NewRoom {
             time_micros,
             increment_micros,
         }
+    }
+
+    pub fn from_creation_body(creation_body: RoomCreationBody, created_by: Uuid) -> Self {
+        Self::new(
+            creation_body.name.clone(),
+            creation_body.public,
+            created_by,
+            Color::random(),
+            creation_body.time_micros,
+            creation_body.increment_micros,
+        )
     }
 }

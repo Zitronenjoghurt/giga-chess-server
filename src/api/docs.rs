@@ -1,4 +1,3 @@
-use crate::api::models::*;
 use crate::api::routes;
 use utoipa::openapi::security::{HttpAuthScheme, HttpBuilder, SecurityScheme};
 use utoipa::OpenApi;
@@ -24,18 +23,18 @@ use utoipa::OpenApi;
     ),
     components(
         schemas(
-            body::login::LoginBody,
-            body::register::RegisterBody,
-            body::room_creation::RoomCreationBody,
-            body::uuid::UuidBody,
-            general::pagination::Pagination,
-            query::pagination::PaginationQuery,
-            response::message::MessageResponse,
-            response::login::LoginResponse,
-            response::room_info::PrivateRoomInfo,
-            response::room_info::PublicRoomInfo,
-            response::room_list::PublicRoomList,
-            response::user_info::PublicUserInfo,
+            giga_chess_api_types::body::login::LoginBody,
+            giga_chess_api_types::body::register::RegisterBody,
+            giga_chess_api_types::body::room_creation::RoomCreationBody,
+            giga_chess_api_types::body::uuid::UuidBody,
+            giga_chess_api_types::general::pagination::Pagination,
+            giga_chess_api_types::query::pagination::PaginationQuery,
+            giga_chess_api_types::response::message::MessageResponse,
+            giga_chess_api_types::response::login::LoginResponse,
+            giga_chess_api_types::response::room_info::PrivateRoomInfo,
+            giga_chess_api_types::response::room_info::PublicRoomInfo,
+            giga_chess_api_types::response::room_list::PublicRoomList,
+            giga_chess_api_types::response::user_info::PublicUserInfo,
         ),
     ),
     modifiers(&SecurityAddon)

@@ -1,9 +1,9 @@
 use crate::api::create_rate_limiter;
 use crate::api::extractors::authentication::AuthUser;
-use crate::api::models::response::message::MessageResponse;
 use crate::app::state::AppState;
 use axum::response::IntoResponse;
 use axum::{routing::get, Router};
+use giga_chess_api_types::response::message::MessageResponse;
 
 /// Ping the API.
 ///

@@ -1,16 +1,15 @@
 use crate::api::create_rate_limiter;
 use crate::api::extractors::authentication::AuthUser;
-use crate::api::models::body::uuid::UuidBody;
-use crate::api::models::response::message::MessageResponse;
-use crate::app::error::{AppError, AppResult};
+use crate::app::error::AppResult;
 use crate::app::state::AppState;
-use crate::database::stores::Store;
 use axum::extract::State;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::routing::post;
 use axum::{Json, Router};
 use axum_valid::Valid;
+use giga_chess_api_types::body::uuid::UuidBody;
+use giga_chess_api_types::response::message::MessageResponse;
 
 /// Join a room.
 #[utoipa::path(
@@ -35,24 +34,7 @@ async fn post_room_join(
     State(state): State<AppState>,
     data: Valid<Json<UuidBody>>,
 ) -> AppResult<impl IntoResponse> {
-    let Some(mut room) = state.stores.room.find(data.get_uuid()).await? else {
-        return Err(AppError::not_found("Room"));
-    };
-
-    if room.created_by == user.id {
-        return Err(AppError::bad_request("Cannot join your own room"));
-    }
-
-    if !room.public {
-        return Err(AppError::not_found("Room"));
-    }
-
-    let success = room.join(&user);
-    if !success {
-        return Err(AppError::bad_request("Room is full"));
-    }
-
-    let room = state.stores.room.save(room).await?;
+    let room = state.services.room.join(data.get_uuid(), &user).await?;
     let _ = state.services.session.start(&state.engine, &room).await?;
     Ok((StatusCode::OK, MessageResponse::new("Successfully joined")))
 }

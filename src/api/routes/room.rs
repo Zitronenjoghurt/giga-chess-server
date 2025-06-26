@@ -1,11 +1,8 @@
 use crate::api::create_rate_limiter;
 use crate::api::extractors::authentication::AuthUser;
-use crate::api::models::body::room_creation::RoomCreationBody;
-use crate::api::models::query::pagination::PaginationQuery;
-use crate::api::models::response::room_info::PrivateRoomInfo;
-use crate::api::models::response::room_list::PublicRoomList;
 use crate::app::error::{AppError, AppResult};
 use crate::app::state::AppState;
+use crate::database::models::room::NewRoom;
 use crate::database::stores::Store;
 use axum::extract::{Query, State};
 use axum::http::StatusCode;
@@ -13,6 +10,10 @@ use axum::response::IntoResponse;
 use axum::routing::{get, post};
 use axum::{Json, Router};
 use axum_valid::Valid;
+use giga_chess_api_types::body::room_creation::RoomCreationBody;
+use giga_chess_api_types::query::pagination::PaginationQuery;
+use giga_chess_api_types::response::room_info::PrivateRoomInfo;
+use giga_chess_api_types::response::room_list::PublicRoomList;
 
 pub mod join;
 
@@ -68,7 +69,7 @@ async fn get_room(
 async fn post_room(
     AuthUser(user): AuthUser,
     State(state): State<AppState>,
-    data: Valid<Json<RoomCreationBody>>,
+    Valid(Json(data)): Valid<Json<RoomCreationBody>>,
 ) -> AppResult<impl IntoResponse> {
     let user_rooms = state.stores.room.find_by_user(&user).await?;
     if user_rooms.len() >= state.config.room_creation_limit {
@@ -78,7 +79,7 @@ async fn post_room(
         )));
     };
 
-    let new_room = data.get_new_room(user.id);
+    let new_room = NewRoom::from_creation_body(data, user.id);
     let room = state.stores.room.create(new_room).await?;
 
     let user_white = if room.player_white.is_some() {
@@ -93,7 +94,7 @@ async fn post_room(
         None
     };
 
-    let info = PrivateRoomInfo::from_room_and_players(&room, user_white, user_black);
+    let info = room.get_private_info(user_white, user_black);
     Ok((StatusCode::CREATED, info))
 }
 

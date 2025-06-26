@@ -1,10 +1,10 @@
-use crate::api::models::body::login::LoginBody;
-use crate::api::models::body::register::RegisterBody;
-use crate::api::models::response::login::LoginResponse;
-use crate::api::models::response::message::MessageResponse;
 use crate::database::models::invite_code::NewInviteCode;
 use crate::database::stores::Store;
 use crate::tests::build_test_server;
+use giga_chess_api_types::body::login::LoginBody;
+use giga_chess_api_types::body::register::RegisterBody;
+use giga_chess_api_types::response::login::LoginResponse;
+use giga_chess_api_types::response::message::MessageResponse;
 
 const USERNAME: &str = "test_user";
 const PASSWORD: &str = "silly goober 123";

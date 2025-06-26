@@ -1,15 +1,18 @@
-use crate::api::models::general::pagination::Pagination;
-use crate::api::models::query::pagination::PaginationQuery;
-use crate::api::models::response::room_info::PublicRoomInfo;
-use crate::api::models::response::room_list::PublicRoomList;
 use crate::app::config::Config;
 use crate::app::error::{AppError, AppResult};
 use crate::app::services::Service;
+use crate::database::models::room::Room;
+use crate::database::models::user::User;
 use crate::database::stores::room::RoomStore;
 use crate::database::stores::user::UserStore;
 use crate::database::stores::{Store, Stores};
 use futures::future::try_join_all;
+use giga_chess_api_types::general::pagination::Pagination;
+use giga_chess_api_types::query::pagination::PaginationQuery;
+use giga_chess_api_types::response::room_info::PublicRoomInfo;
+use giga_chess_api_types::response::room_list::PublicRoomList;
 use std::sync::Arc;
+use uuid::Uuid;
 
 #[derive(Clone)]
 pub struct RoomService {
@@ -41,11 +44,7 @@ impl RoomService {
                     None => None,
                 };
 
-                Ok::<PublicRoomInfo, AppError>(PublicRoomInfo::from_room_and_players(
-                    room,
-                    white.as_ref(),
-                    black.as_ref(),
-                ))
+                Ok::<PublicRoomInfo, AppError>(room.get_public_info(white.as_ref(), black.as_ref()))
             })
             .collect::<Vec<_>>();
 
@@ -56,6 +55,27 @@ impl RoomService {
             rooms: room_infos,
             pagination,
         })
+    }
+
+    pub async fn join(&self, uuid: Uuid, user: &User) -> AppResult<Room> {
+        let Some(mut room) = self.room_store.find(uuid).await? else {
+            return Err(AppError::not_found("Room"));
+        };
+
+        if room.created_by == user.id {
+            return Err(AppError::bad_request("Cannot join your own room"));
+        }
+
+        if !room.public {
+            return Err(AppError::not_found("Room"));
+        }
+
+        let success = room.join(user);
+        if !success {
+            return Err(AppError::bad_request("Room is full"));
+        }
+
+        self.room_store.save(room).await
     }
 }
 

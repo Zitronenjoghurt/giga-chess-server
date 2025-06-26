@@ -1,8 +1,8 @@
-use crate::api::models::query::pagination::PaginationQuery;
-use serde::{Deserialize, Serialize};
-use utoipa::ToSchema;
+use crate::query::pagination::PaginationQuery;
 
-#[derive(Serialize, Deserialize, ToSchema)]
+#[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 pub struct Pagination {
     pub results: i64,
     pub total: i64,

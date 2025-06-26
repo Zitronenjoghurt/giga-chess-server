@@ -1,6 +1,7 @@
 use crate::database::models::Model;
 use chrono::{DateTime, Utc};
 use diesel::{AsChangeset, Identifiable, Insertable, Queryable, Selectable};
+use giga_chess_api_types::response::user_info::PublicUserInfo;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -25,6 +26,14 @@ pub struct User {
     pub password_hash: String,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
+}
+
+impl User {
+    pub fn get_public_info(&self) -> PublicUserInfo {
+        PublicUserInfo {
+            name: self.name.clone(),
+        }
+    }
 }
 
 impl Model for User {

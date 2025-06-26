@@ -1,6 +1,4 @@
 use crate::api::create_rate_limiter;
-use crate::api::models::body::login::LoginBody;
-use crate::api::models::response::login::LoginResponse;
 use crate::app::error::AppResult;
 use crate::app::state::AppState;
 use axum::extract::State;
@@ -8,6 +6,8 @@ use axum::response::IntoResponse;
 use axum::routing::post;
 use axum::{Json, Router};
 use axum_valid::Valid;
+use giga_chess_api_types::body::login::LoginBody;
+use giga_chess_api_types::response::login::LoginResponse;
 
 const TOKEN_TTL_SECS: u64 = 60 * 60 * 24 * 7;
 
